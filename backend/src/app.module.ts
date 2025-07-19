@@ -24,6 +24,12 @@ import { FilmsModule } from './films/films.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public', 'content', 'afisha'),
       serveRoot: '/content/afisha',
+      serveStaticOptions: {
+        index: false,
+        setHeaders: (res) => {
+          res.set('Content-Type', 'image/jpeg'); // Устанавливаем правильный MIME-тип
+        },
+      },
     }),
     FilmsModule,
   ],

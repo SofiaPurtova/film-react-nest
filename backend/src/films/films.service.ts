@@ -8,6 +8,10 @@ import { FilmsResponseDto, FilmScheduleResponseDto } from './dto/films.dto';
 export class FilmsService {
   constructor(@InjectModel(Film.name) private filmModel: Model<Film>) {}
 
+  async getFilmById(id: string): Promise<Film> {
+    return this.filmModel.findOne({ id }).exec();
+  }
+
   async getAllFilms(): Promise<FilmsResponseDto> {
     const films = await this.filmModel.find().exec();
     return {

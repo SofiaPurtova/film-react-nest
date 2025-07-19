@@ -1,26 +1,47 @@
-//TODO реализовать DTO для /orders
+import {
+  IsArray,
+  IsString,
+  IsNumber,
+  IsDate,
+  ValidateNested
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
 export class CreateOrderItemDto {
-  film: string;     // filmId
-  session: string;  // sessionId
-  daytime: Date;    // или string
+  @IsString()
+  film: string;
+
+  @IsString()
+  session: string;
+
+  @IsNumber()
   row: number;
+
+  @IsNumber()
   seat: number;
+
+  @IsNumber()
   price: number;
 }
 
 export class CreateOrderDto {
-  items: CreateOrderItemDto[]; // Массив заказов
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateOrderItemDto)
+  items: CreateOrderItemDto[];
 }
 
 export class OrderResponseItemDto extends CreateOrderItemDto {
+  @IsString()
   id: string;
 }
 
 export class OrderResponseDto {
+  @IsNumber()
   total: number;
-  items: OrderResponseItemDto[];
-}
 
-export class ErrorResponseDto {
-  error: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OrderResponseItemDto)
+  items: OrderResponseItemDto[];
 }

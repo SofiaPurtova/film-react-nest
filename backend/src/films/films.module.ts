@@ -10,5 +10,6 @@ import { Film, FilmSchema } from './schemas/films.schema';
   ],
   controllers: [FilmsController],
   providers: [FilmsService],
+  exports: [MongooseModule],
 })
 export class FilmsModule {}
