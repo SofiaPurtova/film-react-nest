@@ -18,7 +18,7 @@ export class FilmsResponseDto {
 
 export class SessionDto {
   id: string;
-  daytime: Date;  // или string, если не будет преобразования
+  daytime: Date; // или string, если не будет преобразования
   hall: string;
   rows: number;
   seats: number;

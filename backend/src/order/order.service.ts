@@ -1,51 +1,62 @@
 import {
   Injectable,
   ConflictException,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Film } from '../films/schemas/films.schema';
+import { Order, OrderSchema } from './schemas/order.schema';
 import {
   CreateOrderDto,
   CreateOrderItemDto,
   OrderResponseDto,
-  OrderResponseItemDto
+  OrderResponseItemDto,
 } from './dto/order.dto';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Film.name) private readonly filmModel: Model<Film>,
+    @InjectModel(Order.name) private readonly orderModel: Model<Order>,
   ) {}
 
-  async createOrder(createOrderDto: CreateOrderDto): Promise<OrderResponseDto> {
-    // Группируем заказы по filmId и sessionId для пакетной обработки
+  async createOrder(order: CreateOrderDto): Promise<OrderResponseDto> {
+    // 1. Сохраняем контактные данные и информацию о заказе
+    const orderDocument = await this.orderModel.create({
+      email: order.email,
+      phone: order.phone,
+      tickets: order.tickets,
+      createdAt: new Date(),
+    });
+
+    // 2. Обрабатываем бронирование мест
+    const results: OrderResponseItemDto[] = [];
     const ordersBySession = new Map<string, CreateOrderItemDto[]>();
 
-    createOrderDto.items.forEach((item) => {
-      const key = `${item.film}_${item.session}`;
+    order.tickets.forEach((ticket) => {
+      const key = `${ticket.film}_${ticket.session}`;
       if (!ordersBySession.has(key)) {
         ordersBySession.set(key, []);
       }
-      ordersBySession.get(key).push(item);
+      ordersBySession.get(key).push(ticket);
     });
 
-    const results: OrderResponseItemDto[] = [];
-
-    // Обрабатываем каждую группу заказов отдельно
-    for (const [key, items] of ordersBySession) {
+    for (const [key, tickets] of ordersBySession) {
       const [filmId, sessionId] = key.split('_');
       const sessionResult = await this.processSessionOrder(
         filmId,
         sessionId,
-        items);
+        tickets,
+        orderDocument._id.toString(), // Передаем ID заказа
+      );
       results.push(...sessionResult.items);
     }
 
     return {
       total: results.length,
       items: results,
+      orderId: orderDocument._id.toString(), // Возвращаем ID заказа клиенту
     };
   }
 
@@ -53,9 +64,10 @@ export class OrderService {
     filmId: string,
     sessionId: string,
     items: CreateOrderItemDto[],
+    orderId: string,
   ): Promise<OrderResponseDto> {
     // 1. Находим фильм и сеанс
-    const film = await this.filmModel.findOne({ id: filmId }).exec();
+    const film = await this.filmModel.findOne({ _id: filmId }).exec();
     if (!film) {
       throw new BadRequestException(`Film with ID ${filmId} not found`);
     }
@@ -72,18 +84,20 @@ export class OrderService {
     const conflicts = this.findSeatConflicts(items, session.taken);
     if (conflicts.length > 0) {
       throw new ConflictException(
-        `Seats already taken: ${conflicts.join(', ')}`
+        `Seats already taken: ${conflicts.join(', ')}`,
       );
     }
 
     // 4. Резервируем места
-    const newTakenSeats = items.map((item) => `${item.row}:${item.seat}`);
-    const updatedTaken = [...session.taken, ...newTakenSeats];
+    const newTakenSeats = items.map((item) => ({
+      seat: `${item.row}:${item.seat}`,
+      orderId, // Связываем место с заказом
+    }));
 
     // 5. Обновляем документ в MongoDB
     await this.filmModel.updateOne(
-      { id: filmId, 'schedules.id': sessionId },
-      { $set: { 'schedules.$.taken': updatedTaken } }
+      { _id: filmId, 'schedules.id': sessionId },
+      { $push: { 'schedules.$.taken': { $each: newTakenSeats } } },
     );
 
     // 6. Формируем ответ
@@ -92,9 +106,13 @@ export class OrderService {
       items: items.map((item) => ({
         ...item,
         id: this.generateOrderId(),
+        orderId, // Добавляем ID заказа в ответ
       })),
+      orderId,
     };
   }
+
+  // ... остальные методы (validateSeats, findSeatConflicts, generateOrderId) без изменений
 
   private validateSeats(
     items: CreateOrderItemDto[],
@@ -108,16 +126,16 @@ export class OrderService {
 
     // Проверка выхода за границы зала
     const invalidSeats = items.filter(
-      (item) => 
+      (item) =>
         item.row > session.rows ||
         item.seat > session.seats ||
         item.row < 1 ||
-        item.seat < 1
+        item.seat < 1,
     );
 
     if (invalidSeats.length > 0) {
       throw new BadRequestException(
-        `Invalid seats: ${invalidSeats.map((s) => `${s.row}:${s.seat}`).join(', ')}`
+        `Invalid seats: ${invalidSeats.map((s) => `${s.row}:${s.seat}`).join(', ')}`,
       );
     }
   }

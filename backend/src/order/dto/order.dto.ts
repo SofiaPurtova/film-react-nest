@@ -2,8 +2,8 @@ import {
   IsArray,
   IsString,
   IsNumber,
-  IsDate,
-  ValidateNested
+  IsEmail,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -13,6 +13,9 @@ export class CreateOrderItemDto {
 
   @IsString()
   session: string;
+
+  @IsString()
+  daytime: string;
 
   @IsNumber()
   row: number;
@@ -28,12 +31,22 @@ export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateOrderItemDto)
-  items: CreateOrderItemDto[];
+  tickets: CreateOrderItemDto[];
+
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  phone: string;
 }
 
 export class OrderResponseItemDto extends CreateOrderItemDto {
   @IsString()
   id: string;
+
+  @IsString()
+  orderId: string;
 }
 
 export class OrderResponseDto {
@@ -44,4 +57,7 @@ export class OrderResponseDto {
   @ValidateNested({ each: true })
   @Type(() => OrderResponseItemDto)
   items: OrderResponseItemDto[];
+
+  @IsString()
+  orderId: string;
 }

@@ -10,15 +10,16 @@ import { FilmsService } from './films/films.service';
 import { OrderService } from './order/order.service';
 import { join } from 'path';
 import { FilmsModule } from './films/films.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
-      process.env.DATABASE_URL || 'mongodb://localhost:27017/afisha'
+      process.env.DATABASE_URL || 'mongodb://localhost:27017/afisha',
     ), // Подключение к БД "afisha"
     ConfigModule.forRoot({
       isGlobal: true,
-      cache: true
+      cache: true,
     }),
     // @todo: Добавьте раздачу статических файлов из public
     ServeStaticModule.forRoot({
@@ -32,8 +33,11 @@ import { FilmsModule } from './films/films.module';
       },
     }),
     FilmsModule,
+    OrderModule,
   ],
-  controllers: [/*FilmsController, */ OrderController],
-  providers: [configProvider, /*FilmsService, */ OrderService],
+  controllers: [
+    /*FilmsController, OrderController*/
+  ],
+  providers: [configProvider, /*FilmsService, OrderService*/],
 })
 export class AppModule {}

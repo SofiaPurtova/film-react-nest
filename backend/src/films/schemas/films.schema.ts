@@ -30,8 +30,9 @@ export class Film extends Document {
   @Prop()
   cover: string;
 
-  @Prop({ type: [
-      { 
+  @Prop({
+    type: [
+      {
         id: String,
         daytime: Date,
         hall: String,
@@ -39,8 +40,8 @@ export class Film extends Document {
         seats: Number,
         price: Number,
         taken: [String], // Формат "ряд:место" (например, "A:1")
-      }
-    ]
+      },
+    ],
   })
   schedules: {
     id: string;
