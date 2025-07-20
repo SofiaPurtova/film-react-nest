@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Film extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   id: string;
 
   @Prop({ required: true })
@@ -43,7 +43,7 @@ export class Film extends Document {
       },
     ],
   })
-  schedules: {
+  schedule: {
     id: string;
     daytime: Date;
     hall: string;

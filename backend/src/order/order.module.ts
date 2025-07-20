@@ -8,7 +8,7 @@ import { FilmsModule } from 'src/films/films.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    FilmsModule
+    FilmsModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],

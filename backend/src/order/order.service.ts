@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Film } from '../films/schemas/films.schema';
-import { Order, OrderSchema } from './schemas/order.schema';
+import { Order } from './schemas/order.schema';
 import {
   CreateOrderDto,
   CreateOrderItemDto,
@@ -67,12 +67,12 @@ export class OrderService {
     orderId: string,
   ): Promise<OrderResponseDto> {
     // 1. Находим фильм и сеанс
-    const film = await this.filmModel.findOne({ _id: filmId }).exec();
+    const film = await this.filmModel.findOne({ id: filmId }).exec();
     if (!film) {
       throw new BadRequestException(`Film with ID ${filmId} not found`);
     }
 
-    const session = film.schedules.find((s) => s.id === sessionId);
+    const session = film.schedule.find((s) => s.id === sessionId);
     if (!session) {
       throw new BadRequestException(`Session with ID ${sessionId} not found`);
     }
@@ -96,8 +96,8 @@ export class OrderService {
 
     // 5. Обновляем документ в MongoDB
     await this.filmModel.updateOne(
-      { _id: filmId, 'schedules.id': sessionId },
-      { $push: { 'schedules.$.taken': { $each: newTakenSeats } } },
+      { _id: filmId, 'schedule.id': sessionId },
+      { $push: { 'schedule.$.taken': { $each: newTakenSeats } } },
     );
 
     // 6. Формируем ответ

@@ -36,8 +36,8 @@ export class FilmsService {
       throw new Error('Film not found');
     }
     return {
-      total: film.schedules.length,
-      items: film.schedules.map((session) => ({
+      total: film.schedule.length,
+      items: film.schedule.map((session) => ({
         id: session.id,
         daytime: session.daytime,
         hall: session.hall,
