@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Film } from './film.entity';
+import { FilmEntity } from './film.entity';
 
 @Entity()
-export class Schedule {
+export class ScheduleEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,6 +24,6 @@ export class Schedule {
   @Column('text', { array: true, default: [] })
   taken: string[];
 
-  @ManyToOne(() => Film, (film) => film.schedules)
-  film: Film;
+  @ManyToOne(() => FilmEntity, (film) => film.schedules)
+  film: FilmEntity;
 }

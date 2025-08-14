@@ -7,14 +7,13 @@ import {
   FilmsResponseDto,
   FilmScheduleResponseDto
 } from '../films/dto/films.dto';
+import { FilmsRepository } from './film.repository';
 
 @Injectable()
-export class FilmsPostgreSQLRepository {
+export class FilmsPostgreSQLRepository implements FilmsRepository {
   constructor(
     @InjectRepository(FilmEntity)
-    private readonly filmRepository: Repository<FilmEntity>,
-    @InjectRepository(ScheduleEntity)
-    private readonly scheduleRepository: Repository<ScheduleEntity>,
+    private readonly filmRepository: Repository<FilmEntity>
   ) {}
 
   async getFilmById(id: string): Promise<FilmEntity> {

@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Schedule } from './schedule.entity';
+import { ScheduleEntity } from './schedule.entity';
 
 @Entity()
-export class Film {
+export class FilmEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -30,6 +30,6 @@ export class Film {
   @Column({ nullable: true })
   cover: string;
 
-  @OneToMany(() => Schedule, schedule => schedule.film)
-  schedules: Schedule[];
+  @OneToMany(() => ScheduleEntity, (schedule) => schedule.film)
+  schedules: ScheduleEntity[];
 }

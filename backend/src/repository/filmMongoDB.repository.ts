@@ -6,9 +6,10 @@ import {
   FilmsResponseDto,
   FilmScheduleResponseDto
 } from '../films/dto/films.dto';
+import { FilmsRepository } from './film.repository';
 
 @Injectable()
-export class FilmsMongoDBRepository {
+export class FilmsMongoDBRepository implements FilmsRepository {
   constructor(
     @InjectModel(Film.name) private readonly filmModel: Model<Film>
 ) {}
