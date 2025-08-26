@@ -21,7 +21,10 @@
     "test:logger": "jest ./logger/",
     "test:json": "jest ./logger/json.logger.spec.ts",
     "test:tskv": "jest ./logger/tskv.logger.spec.ts",
-    "test:factory": "jest ./logger/logger.factory.spec.ts"
+    "test:factory": "jest ./logger/logger.factory.spec.ts",
+    "test:controllers": "jest ./*/*.controller.spec.ts",
+    "test:films": "jest ./films/films.controller.spec.ts",
+    "test:order": "jest ./order/order.controller.spec.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
