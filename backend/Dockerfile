@@ -1,6 +1,13 @@
 # Этап сборки
 FROM node:18-alpine AS build
 
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    git \
+    openssl
+
 WORKDIR /app
 
 # Копируем файлы зависимостей и устанавливаем их
