@@ -1,8 +1,5 @@
 # Этап сборки
-FROM node:18-alpine AS build
-
-# Устанавливаем только openssl для решения проблемы с crypto
-RUN apk add --no-cache openssl
+FROM node:18-slim AS build  # <- ИЗМЕНИТЬ НА slim
 
 WORKDIR /app
 
@@ -17,10 +14,7 @@ COPY . .
 RUN npm run build
 
 # Этап запуска
-FROM node:18-alpine AS production
-
-# Устанавливаем openssl и в production образ
-RUN apk add --no-cache openssl
+FROM node:18-slim AS production
 
 WORKDIR /app
 COPY package*.json ./

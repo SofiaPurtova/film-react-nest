@@ -18,6 +18,6 @@ async function bootstrap() {
   const logger = createLogger();
   app.useLogger(logger);
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3000);
+  await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
