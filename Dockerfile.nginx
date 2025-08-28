@@ -1,11 +1,27 @@
 # ./Dockerfile.nginx
+# Стадия 1: Сборка фронтенда
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Копируем файлы зависимостей и устанавливаем их
+COPY ./frontend/package*.json ./
+RUN npm ci
+
+# Копируем весь исходный код фронтенда
+COPY ./frontend/ .
+
+# Собираем фронтенд
+RUN npm run build
+
+# Стадия 2: Финальный образ с nginx
 FROM nginx:alpine
 
 # Удаляем дефолтный конфиг nginx
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Копируем НАШ конфиг из папки nginx/ в контейнер
+# Копируем наш конфиг из папки nginx/ в контейнер
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Копируем собранный фронтенд (папку frontend/dist) в папку nginx
-COPY ./frontend/dist /usr/share/nginx/html
+# Копируем собранный фронтенд из стадии frontend-builder
+COPY --from=frontend-builder /app/dist /usr/share/nginx/html
