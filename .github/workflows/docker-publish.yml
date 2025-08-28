@@ -54,8 +54,8 @@ jobs:
       - name: Build and Push Nginx Image
         uses: docker/build-push-action@v5
         with:
-          context: ./nginx
-          file: ./nginx/Dockerfile
+          context: .
+          file: ./Dockerfile.nginx
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}/film-react-nest/nginx:latest
