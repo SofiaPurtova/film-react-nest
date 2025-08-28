@@ -12,7 +12,8 @@ RUN npm ci
 COPY ./frontend/ .
 
 # Собираем фронтенд
-RUN npm run build
+# RUN npm run build
+RUN npm run build --verbose || (echo "Build failed. Contents of current directory:" && ls -la && exit 1)
 
 # Стадия 2: Финальный образ с nginx
 FROM nginx:alpine
