@@ -1,5 +1,5 @@
 # Этап сборки
-FROM node:18-alpine AS build
+FROM node:18-slim AS build
 
 RUN apk add --no-cache \
     python3 \
