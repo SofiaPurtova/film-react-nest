@@ -13,8 +13,8 @@ COPY ./frontend/ .
 
 # Собираем фронтенд
 # RUN npm run build
-RUN npm run build --verbose || (echo "Build failed. Contents of current directory:" && ls -la && exit 1)
-
+# Собираем фронтенд и сохраняем полный вывод логов
+RUN npm run build 2>&1 | tee build.log || (echo "=== BUILD FAILED ===" && cat build.log && echo "=== DIRECTORY CONTENTS ===" && ls -la && exit 1)
 # Стадия 2: Финальный образ с nginx
 FROM nginx:alpine
 
