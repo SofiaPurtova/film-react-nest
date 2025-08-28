@@ -1,5 +1,5 @@
 # Этап сборки
-FROM node:18-slim AS build  # <- ИЗМЕНИТЬ НА slim
+FROM node:18-slim AS build
 
 WORKDIR /app
 
