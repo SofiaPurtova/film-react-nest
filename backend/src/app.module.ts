@@ -12,6 +12,7 @@ import { DatabaseModule } from './database/database.module';
 import { FilmsRepositoryProvider } from './repository/repository.factory';
 import { FilmsRepository } from './repository/film.repository';
 import { Film, FilmSchema } from './films/schemas/films.schema';
+import { createLogger } from './logger/logger.factory';
 
 @Module({
   imports: [
@@ -50,7 +51,16 @@ import { Film, FilmSchema } from './films/schemas/films.schema';
     OrderModule,
   ],
   controllers: [],
-  providers: [/*configProvider,*/ FilmsRepositoryProvider],
-  exports: [FilmsRepository],
+  providers: [/*configProvider,*/
+    FilmsRepositoryProvider,
+    {
+      provide: 'LoggerService',
+      useFactory: createLogger,
+    },
+  ],
+  exports: [
+    FilmsRepository,
+    'LoggerService',
+  ],
 })
 export class AppModule {}
