@@ -1,4 +1,5 @@
 # FILM!
+Сайт доступен по адресу http://testdomain.sofia.nomoreoatiessbs.ru
 
 ## Установка
 
